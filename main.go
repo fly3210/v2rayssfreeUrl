@@ -12,7 +12,7 @@ import (
 
 func main() {
 	http.HandleFunc("/", helloWord) // 注册处理器
-	port := ":8080"
+	port := ":59399"
 	fmt.Printf("http://127.0.0.1%s/", port)
 	http.ListenAndServe(port, nil) // 监听8888端口，启动web项目
 }

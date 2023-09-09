@@ -14,7 +14,7 @@ RUN go build -o main .
 RUN ls
 
 # 暴露端口（如果你的应用需要监听端口的话）
-EXPOSE 8080
+EXPOSE 59399
 
 # 运行应用
 CMD ["./main"]
