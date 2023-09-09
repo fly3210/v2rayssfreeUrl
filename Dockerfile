@@ -8,7 +8,8 @@ WORKDIR /go/src/app
 COPY . .
 
 # 编译 Go 代码
-RUN go build -o main .
+# RUN go build -o main .
+RUN go run main.go
 
 # 暴露端口（如果你的应用需要监听端口的话）
 EXPOSE 8080
