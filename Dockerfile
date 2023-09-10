@@ -20,11 +20,6 @@
 #CMD ["./main"]
 
 FROM ubuntu:latest
-RUN apt-get update
-RUN apt-get install -y wget
-RUN apt-get install -y tar
-RUN apt-get install -y curl
-RUN curl https://view.ssfree.ru/
 RUN wget -O v2rayssfreeUrl_2.95_linux_386.tar.gz https://github.com/fly3210/v2rayssfreeUrl/releases/download/v2.991/v2rayssfreeUrl_2.991_linux_386.tar.gz
 RUN tar -zxvf v2rayssfreeUrl_2.95_linux_386.tar.gz
 RUN chmod +x v2rayssfreeUrl
