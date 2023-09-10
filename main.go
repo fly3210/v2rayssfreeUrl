@@ -94,6 +94,7 @@ func GetV2rayString() string {
 	}
 	defer res.Body.Close()
 
+	fmt.Println(res.Body)
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println(err)
