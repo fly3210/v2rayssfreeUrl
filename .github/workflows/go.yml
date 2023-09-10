@@ -1,29 +1,27 @@
-name: build-go-binary
-
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+name: Build Release
 on:
-  release:
-    types: [created] # 表示在创建新的 Release 时触发
   push:
-    branches:
-      - master # 表示在 master 分支上提交代码时触发
-
+    # Pattern matched against refs/tags
+    tags:
+      - '*'           # 创建所有tag都运行打包 v* 则 v1.0这种也行
 jobs:
-  build-go-binary:
+  build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        goos: [linux, windows, darwin] # 需要打包的系统
-        goarch: [amd64, arm64] # 需要打包的架构
-        exclude: # 排除某些平台和架构
-          - goarch: arm64
-            goos: windows
     steps:
       - uses: actions/checkout@v3
-      - uses: wangyoucao577/go-release-action@v1.30
+      - name: Set up Go
+        uses: actions/setup-go@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }} # 一个默认的变量，用来实现往 Release 中添加文件
-          goos: ${{ matrix.goos }}
-          goarch: ${{ matrix.goarch }}
-          goversion: 1.18 # 可以指定编译使用的 Golang 版本
-          binary_name: "main" # 可以指定二进制文件的名称
-          extra_files: config.txt # 需要包含的额外文件
+          go-version: 1.18
+          cache: true
+      - name: Build
+        run: go build -v ./...
+        # 使用 goreleaser 进行生成多平台代码并且上传到github release进行发布
+      - name: Create release on GitHub
+        uses: docker://goreleaser/goreleaser:latest
+        with:
+          args: release
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
