@@ -35,5 +35,6 @@ RUN chmod +x v2rayssfreeUrl
 RUN wget -O config.txt https://raw.githubusercontent.com/fly3210/v2rayssfreeUrl/master/config.txt
 
 EXPOSE 59399
+# the CMD command is not working, so I have to use the ENTRYPOINT command
 
 CMD ["./v2rayssfreeUrl"]
