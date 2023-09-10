@@ -23,6 +23,15 @@ jobs:
         with:
           go-version: 1.19
 
+      - name: Copy Config File
+        run: |
+          cp config.txt ./
+
+      - name: Build your package
+        run: |
+          # Add your build command here, e.g.:
+          # go build -o your_package_name main.go
+
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
