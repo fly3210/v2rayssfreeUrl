@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	port := ":59399"
+	port := "0.0.0.0:59399"
 	r := gin.Default()
 	r.GET("/", helloWord)
 	r.GET("/test1", test1)
