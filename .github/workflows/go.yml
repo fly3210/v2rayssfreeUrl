@@ -1,26 +1,59 @@
-name: build-go-binary
+name: Go Build and Include config.txt
 
 on:
-  release:
-    types: [created] # 表示在创建新的 Release 时触发
+  push:
+    branches:
+      - main
 
 jobs:
-  build-go-binary:
+  build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        goos: [linux, windows, darwin] # 需要打包的系统
-        goarch: [amd64, arm64] # 需要打包的架构
-        exclude: # 排除某些平台和架构
-          - goarch: arm64
-            goos: windows
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: fly3210/v2rayssfreeUrl@vmaster
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }} # 一个默认的变量，用来实现往 Release 中添加文件
-          goos: ${{ matrix.goos }}
-          goarch: ${{ matrix.goarch }}
-          goversion: 1.18 # 可以指定编译使用的 Golang 版本
-          binary_name: "v2url" # 可以指定二进制文件的名称
-          extra_files: config.txt # 需要包含的额外文件
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+
+    - name: Build Go Binary
+      run: go build -o my_binary
+
+    - name: Copy config.txt
+      run: cp path/to/config.txt .
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          Changes in this release.
+
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./my_binary
+        asset_name: my_binary
+        asset_content_type: application/octet-stream
+
+        # 上传 config.txt
+    - name: Upload config.txt
+      id: upload-config
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./config.txt
+        asset_name: config.txt
+        asset_content_type: application/octet-stream
