@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -11,14 +12,15 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", helloWord) // 注册处理器
 	port := ":59399"
-	fmt.Printf("http://0.0.0.0%s/", port)
-	http.ListenAndServe(port, nil) // 监听8888端口，启动web项目
+	r := gin.Default()
+	r.GET("/", helloWord)
+	r.Run(port)
 }
 
-func helloWord(writer http.ResponseWriter, request *http.Request) {
-	writer.Write([]byte(GetV2rayString()))
+func helloWord(c *gin.Context) {
+	//writer.Write([]byte(GetV2rayString()))
+	c.Writer.Write([]byte(GetV2rayString()))
 }
 
 type V2rayTime struct {
