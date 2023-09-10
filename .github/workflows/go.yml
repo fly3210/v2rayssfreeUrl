@@ -26,8 +26,6 @@ jobs:
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
-        run: |
-          cp config.txt ./
         with:
           # either 'goreleaser' (default) or 'goreleaser-pro'
           distribution: goreleaser
