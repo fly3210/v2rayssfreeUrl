@@ -15,7 +15,14 @@ func main() {
 	port := ":59399"
 	r := gin.Default()
 	r.GET("/", helloWord)
+	r.GET("/test1", test1)
 	r.Run(port)
+}
+
+func test1(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "test1",
+	})
 }
 
 func helloWord(c *gin.Context) {
