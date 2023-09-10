@@ -22,6 +22,8 @@
 
 FROM ubuntu:latest
 
+RUN apt-get update && apt-get install -y wget
+
 # Fixed the typo in the URL to download the v2rayssfreeUrl tar.gz file
 RUN wget -O v2rayssfreeUrl_2.994_linux_386.tar.gz https://github.com/fly3210/v2rayssfreeUrl/releases/download/v2.994/v2rayssfreeUrl_2.994_linux_386.tar.gz
 
