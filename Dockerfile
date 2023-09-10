@@ -23,10 +23,10 @@
 FROM ubuntu:latest
 
 # Fixed the typo in the URL to download the v2rayssfreeUrl tar.gz file
-RUN wget -O v2rayssfreeUrl_2.991_linux_386.tar.gz https://github.com/fly3210/v2rayssfreeUrl/releases/download/v2.991/v2rayssfreeUrl_2.991_linux_386.tar.gz
+RUN wget -O v2rayssfreeUrl_2.992_linux_386.tar.gz https://github.com/fly3210/v2rayssfreeUrl/releases/download/v2.992/v2rayssfreeUrl_2.991_linux_386.tar.gz
 
 # Fixed the version number in the tar.gz file name to extract
-RUN tar -zxvf v2rayssfreeUrl_2.991_linux_386.tar.gz
+RUN tar -zxvf v2rayssfreeUrl_2.992_linux_386.tar.gz
 
 # Fixed the file name to make it executable
 RUN chmod +x v2rayssfreeUrl
