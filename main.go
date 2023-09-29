@@ -11,23 +11,20 @@ import (
 	"time"
 )
 
+var cdnUrl = "cf.0sm.com"
+var v2u = "aop.ssfree.ru"
+var pst = "isun cdn 节点"
+
 func main() {
 	port := "0.0.0.0:59399"
 	r := gin.Default()
 	r.GET("/", helloWord)
-	r.GET("/test1", test1)
 	r.Run(port)
-}
-
-func test1(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "test1",
-	})
 }
 
 func helloWord(c *gin.Context) {
 	//writer.Write([]byte(GetV2rayString()))
-	c.Writer.Write([]byte(GetV2rayString()))
+	c.Writer.Write([]byte(GetV2rayString(c)))
 }
 
 type V2rayTime struct {
@@ -80,7 +77,7 @@ func IsReadMemory() bool {
 	return true
 }
 
-func GetV2rayString() string {
+func GetV2rayString(c *gin.Context) string {
 	if IsReadMemory() {
 		return v2rayTime.v2
 	}
@@ -127,14 +124,16 @@ func GetV2rayString() string {
 	if err != nil {
 		fmt.Println(err)
 	}
-	//fmt.Println(v2rayJson)
-	// 读取config.txt
-	bytes, err = ioutil.ReadFile("config.txt")
-	if err != nil {
-		fmt.Println(err)
-	}
-	// 换行符分割成数组
-	arr := regexp.MustCompile("\r\n").Split(string(bytes), -1)
+	// 接收get请求参数string
+	cdn := c.DefaultQuery("c", cdnUrl)
+	// 定义个数组
+	var arr []string
+	// 追加
+	arr = append(arr, cdn)
+	u := c.DefaultQuery("u", v2u)
+	arr = append(arr, u)
+	ps := c.DefaultQuery("p", pst)
+	arr = append(arr, ps)
 	// 替换
 	v2rayJson.Host = arr[1]
 	v2rayJson.Ps = arr[2]
