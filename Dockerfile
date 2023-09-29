@@ -8,7 +8,7 @@ WORKDIR /go/src/app
 # 复制项目文件到工作目录中
 COPY . /go/src/app
 
-# 编译 Go 代码
+# 编译 Go 代码 1
 RUN go build -o main .
 
 # 打印文件列表
