@@ -30,11 +30,13 @@ func helloWord(c *gin.Context) {
 type V2rayTime struct {
 	v2      string
 	timeInt int
+	vmess   []string
 }
 
 var v2rayTime = V2rayTime{
 	v2:      "",
 	timeInt: 0,
+	vmess:   []string{},
 }
 
 type V2rayJson struct {
@@ -77,46 +79,12 @@ func IsReadMemory() bool {
 	return true
 }
 
-func GetV2rayString(c *gin.Context) string {
-	if IsReadMemory() {
-		return v2rayTime.v2
-	}
-	url := "https://view.ssfree.ru/"
-	method := "GET"
-
-	client := &http.Client{}
-	req, err := http.NewRequest(method, url, nil)
-
-	if err != nil {
-		fmt.Println(err)
-		return ""
-	}
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return ""
-	}
-	defer res.Body.Close()
-
-	body, err := ioutil.ReadAll(res.Body)
-	fmt.Println(string(body))
-	if err != nil {
-		fmt.Println(err)
-	}
-	// 正则匹配
-	regxpstr := `var vmess = \"(.*?)\"`
-	compile, err := regexp.Compile(regxpstr)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	// 查找符合正则的第一个
-	one := compile.FindStringSubmatch(string(body))
+func GenerateV2(one []string, c *gin.Context) string {
 	bytes := []byte(one[1])
 	// 替换vmess://为""
 	bytes = bytes[8:]
 	// base64解码
-	bytes, err = base64.StdEncoding.DecodeString(string(bytes))
+	bytes, err := base64.StdEncoding.DecodeString(string(bytes))
 	println(string(bytes))
 	// 字符串转json
 	var v2rayJson V2rayJson
@@ -147,4 +115,44 @@ func GetV2rayString(c *gin.Context) string {
 	v2rayTime.v2 = str
 	v2rayTime.timeInt = GetTime()
 	return str
+}
+
+func GetV2rayString(c *gin.Context) string {
+	if IsReadMemory() {
+		//return v2rayTime.v2
+		return GenerateV2(v2rayTime.vmess, c)
+	}
+	url := "https://view.ssfree.ru/"
+	method := "GET"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	fmt.Println(string(body))
+	if err != nil {
+		fmt.Println(err)
+	}
+	// 正则匹配
+	regxpstr := `var vmess = \"(.*?)\"`
+	compile, err := regexp.Compile(regxpstr)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// 查找符合正则的第一个
+	one := compile.FindStringSubmatch(string(body))
+	v2rayTime.vmess = one
+	return GenerateV2(one, c)
+
 }
