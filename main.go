@@ -79,7 +79,7 @@ func IsReadMemory() bool {
 	return true
 }
 
-func GenerateV2(one []string, c *gin.Context) string {
+func GenerateV2(one []string, c *gin.Context, b bool) string {
 	bytes := []byte(one[1])
 	// 替换vmess://为""
 	bytes = bytes[8:]
@@ -113,14 +113,16 @@ func GenerateV2(one []string, c *gin.Context) string {
 	//println(string(bytes))
 	str := base64.StdEncoding.EncodeToString(bytes)
 	v2rayTime.v2 = str
-	v2rayTime.timeInt = GetTime()
+	if b {
+		v2rayTime.timeInt = GetTime()
+	}
 	return str
 }
 
 func GetV2rayString(c *gin.Context) string {
 	if IsReadMemory() {
 		//return v2rayTime.v2
-		return GenerateV2(v2rayTime.vmess, c)
+		return GenerateV2(v2rayTime.vmess, c, false)
 	}
 	url := "https://view.ssfree.ru/"
 	method := "GET"
@@ -153,6 +155,6 @@ func GetV2rayString(c *gin.Context) string {
 	// 查找符合正则的第一个
 	one := compile.FindStringSubmatch(string(body))
 	v2rayTime.vmess = one
-	return GenerateV2(one, c)
+	return GenerateV2(one, c, true)
 
 }

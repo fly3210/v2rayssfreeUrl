@@ -1,27 +1,28 @@
 
 # 使用 Golang 镜像作为基础镜像
-FROM golang:latest
-
-# 设置工作目录
-WORKDIR /go/src/app
-
-# 复制项目文件到工作目录中
-COPY . /go/src/app
-
-# 下载依赖
-RUN go mod tidy
-
-# 编译 Go 代码 1
-RUN go build -o main .
-
-# 打印文件列表
-RUN ls
-
-# 暴露端口（如果你的应用需要监听端口的话）
-EXPOSE 59399
-
-# 运行应用
-CMD ["./main"]
+#FROM golang:latest
+#
+## 设置工作目录
+#WORKDIR /go/src/app
+#
+## 复制项目文件到工作目录中
+#COPY . /go/src/app
+#
+#
+## 下载依赖
+#RUN go mod tidy
+#
+## 编译 Go 代码 1
+#RUN go build -o main .
+#
+## 打印文件列表
+#RUN ls
+#
+## 暴露端口（如果你的应用需要监听端口的话）
+#EXPOSE 59399
+#
+## 运行应用
+#CMD ["./main"]
 
 #FROM ubuntu:latest
 #
@@ -43,3 +44,24 @@ CMD ["./main"]
 ## the CMD command is not working, so I have to use the ENTRYPOINT command
 #
 #CMD ["./v2rayssfreeUrl"]
+
+FROM ubuntu:latest
+
+# 安装 golang 1.19
+RUN apt-get update && apt-get install -y wget
+RUN wget https://golang.google.cn/dl/go1.19.13linux-amd64.tar.gz
+RUN tar -C /usr/local -xzf go1.19.13linux-amd64.tar.gz
+ENV PATH=$PATH:/usr/local/go/bin
+
+# git clone 项目
+RUN apt-get install -y git
+RUN git clone https://github.com/fly3210/v2rayssfreeUrl.git
+
+# 编译项目
+WORKDIR /v2rayssfreeUrl
+RUN go mod tidy
+RUN go build -o main .
+
+EXPOSE 59399
+CMD ["./main"]
+
