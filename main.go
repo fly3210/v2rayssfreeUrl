@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
 	"time"
 )
@@ -108,6 +109,13 @@ func GenerateV2(one []string, c *gin.Context, b bool) string {
 	v2rayJson.Add = arr[0]
 	// v2rayJson 转 string
 	bytes, err = json.Marshal(v2rayJson)
+
+	// 接收一个参数 是否是clash
+	clash := c.DefaultQuery("is_clash", "0")
+	if clash == "1" {
+		return GenerateClash(v2rayJson)
+	}
+
 	// 拼接字符串
 	bytes = []byte("vmess://" + base64.StdEncoding.EncodeToString(bytes))
 	//println(string(bytes))
@@ -117,6 +125,45 @@ func GenerateV2(one []string, c *gin.Context, b bool) string {
 		v2rayTime.timeInt = GetTime()
 	}
 	return str
+}
+
+// 生成clash的节点
+func GenerateClash(rayJson V2rayJson) string {
+	// 读取配置文件 clash.yml
+	// 打开文件
+	file, err := os.Open("./clash.yml")
+	if err != nil {
+		return "Error opening file: " + err.Error()
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			fmt.Println("关闭文件失败")
+		}
+	}(file) // 确保文件被关闭
+
+	// 读取文件的全部内容
+	contents, err := ioutil.ReadAll(file)
+	if err != nil {
+		return "Error reading file: " + err.Error()
+	}
+
+	rayJson.Type = "vmess"
+	// 替换字符串 %s 根据v2rayjson 去生成
+	// {name: 自用纽约, server: 新服务器地址, port: 新端口, type: vmess, uuid: 新UUID, alterId: 0, cipher: auto, tls: false, network: ws, ws-opts: {path: /新路径, headers: {Host: 新主机名}}}
+	v2 := fmt.Sprintf("{name: %s, server: %s, port: %s, type: %s, uuid: %s, alterId: %s, cipher: auto, tls: true, network: %s, ws-opts: {path: %s, headers: {Host: %s}}}",
+		rayJson.Ps,
+		rayJson.Add,
+		rayJson.Port,
+		rayJson.Type,
+		rayJson.Id,
+		rayJson.Aid,
+		rayJson.Net,
+		rayJson.Path,
+		rayJson.Host,
+	)
+	// 替换
+	return fmt.Sprintf(string(contents), v2, rayJson.Ps, rayJson.Ps)
 }
 
 func GetV2rayString(c *gin.Context) string {
