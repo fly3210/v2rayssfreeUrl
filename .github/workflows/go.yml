@@ -33,3 +33,6 @@ jobs:
           args: release
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
+files:
+  - clash.yml
