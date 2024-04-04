@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate PHP Entity from JSON</title>
+</head>
+<body>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<!-- and it's easy to individually load additional languages -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/php.min.js"></script>
+
+<div id="con">
+    <h2>Generate PHP Entity from JSON</h2>
+    <form id="jsonForm">
+        <!--        <label for="jsonData">JSON Data:</label><br>-->
+        <textarea id="jsonData" name="jsonData" rows="10" cols="50"></textarea><br><br>
+        <div class="box-button">
+            <button type="button" class="buttons" onclick="generatePHPClass()">Generate PHP Entities</button>
+        </div>
+    </form>
+
+
+    <div class="code_fly">
+
+    </div>
+</div>
+
+
+<style>
+    html {
+        font-family: Arial, sans-serif;
+        background-image: url("https://unpkg.com/testimgs22@1.0.1/bjj.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+        color: #fff;
+    }
+    #con {
+        width: 80%;
+        margin: 0 auto;
+        background: #dbdbdbcc;
+        border: 1px solid #cccccc80;
+        border-radius: 4px;
+        padding: 20px;
+    }
+    h2{
+        color: #fff;
+        text-align: center;
+    }
+    #con .box-button{
+        text-align: center;
+    }
+    textarea {
+        width: 100%;
+        height: 500px;
+        background: transparent;
+        resize: none;
+    }
+    .buttons {
+        padding: 10px 20px;
+        background: #1b567e;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .hljs{
+        background: #d5e0e4!important;
+    }
+    .code_fly pre code {
+        padding: 10px;
+        border-radius: 15px;
+        margin: 10px 0;
+    }
+</style>
+
+<script>
+    var code_data = [];
+
+    function generatePHPClass() {
+        const jsonData = document.getElementById('jsonData').value.trim();
+
+        if (jsonData === '') {
+            console.log('Please provide JSON data.');
+            return;
+        }
+
+        try {
+            const parsedData = JSON.parse(jsonData);
+            ge(parsedData, 'BaseClass');
+            code_data = [];
+        } catch (error) {
+            console.log('Invalid JSON data: ' + error.message);
+        }
+    }
+
+    function ge(jsonData, className) {
+        // Clear previous code
+        document.querySelector('.code_fly').innerHTML = '';
+        generatePhpEntityFromJSON(jsonData, className)
+        // code_data 反向输出
+        code_data = code_data.reverse();
+        code_data.map((item) => {
+            // <pre><code class="language-php">...</code></pre> 批量创建
+            // console.log(item)
+            let pre = document.createElement('pre');
+            let code = document.createElement('code');
+            code.className = 'language-php';
+            code.textContent  = item;
+            pre.appendChild(code);
+            document.querySelector('.code_fly').appendChild(pre);
+            hljs.initHighlightingOnLoad(); //这里调用
+        })
+    }
+
+    function generatePhpEntityFromJSON(jsonData, className) {
+        let phpCode = `<?php\n\n`;
+
+        // Generate class declaration
+        phpCode += `class ${className} {\n`;
+
+        // Generate properties
+        for (const key in jsonData) {
+            const value = jsonData[key];
+            const phpType = mapJsToPhpType(typeof value);
+
+            if (Array.isArray(value)) {
+                if (value.length > 0 && typeof value[0] === 'object') {
+                    // Array of objects
+                    const innerClassName = capitalizeFirstLetter(key);
+                    generatePhpEntityFromJSON(value[0], innerClassName);
+
+                    // Generate property declaration for array of objects
+                    phpCode += `    /** @var ${innerClassName}[] $${key} **/\n`;
+                    phpCode += `    public $${key} = array();\n`;
+                } else {
+                    // Array of primitive types
+                    phpCode += `    /** @var ${phpType}[] $${key} **/\n`;
+                    phpCode += `    public $${key} = array();\n`;
+                }
+            } else if (typeof value === 'object') {
+                // Nested object
+                const innerClassName = capitalizeFirstLetter(key);
+                generatePhpEntityFromJSON(value, innerClassName);
+
+                // Generate property declaration for nested object
+                phpCode += `    /** @var ${innerClassName} $${key} **/\n`;
+                phpCode += `    public $${key};\n`;
+            } else {
+                // Primitive type
+                phpCode += `    /** @var ${phpType} $${key} **/\n`;
+                phpCode += `    public $${key};\n`;
+            }
+        }
+
+        phpCode += `}\n\n`;
+        phpCode += `?>\n`;
+
+        // console.log(phpCode);
+        code_data.push(phpCode)
+    }
+
+    function capitalizeFirstLetter(s) {
+        return s.substring(0, 1).toUpperCase() + s.substring(1);
+    }
+
+    function mapJsToPhpType(jsType) {
+        switch (jsType) {
+            case 'number':
+                return 'int';
+            case 'string':
+                return 'string';
+            case 'boolean':
+                return 'bool';
+            default:
+                return 'mixed';
+        }
+    }
+
+</script>
+
+</body>
+</html>
