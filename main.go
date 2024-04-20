@@ -12,13 +12,19 @@ import (
 	"time"
 )
 
-var cdnUrl = "cf.0sm.com"
-var v2u = "aop.ssfree.ru"
-var pst = "isun cdn 节点"
+/*
+*
+cf.0sm.com, *.cloudflare.182682.xyz
+*/
+var cdnUrl = "api.cloudflare.182682.xyz"
+
+// var v2u = "aop.ssfree.ru"
+var pst = "view.ssfree.ru提供免费节点"
 
 func main() {
 	port := "0.0.0.0:59399"
-	r := gin.Default()
+	//r := gin.Default()
+	r := gin.New()
 	r.GET("/", helloWord)
 	r.Run(port)
 }
@@ -99,7 +105,7 @@ func GenerateV2(one []string, c *gin.Context, b bool) string {
 	var arr []string
 	// 追加
 	arr = append(arr, cdn)
-	u := c.DefaultQuery("u", v2u)
+	u := c.DefaultQuery("u", v2rayJson.Add)
 	arr = append(arr, u)
 	ps := c.DefaultQuery("p", pst)
 	arr = append(arr, ps)
