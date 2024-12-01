@@ -15,61 +15,6 @@ cf.0sm.com, *.cloudflare.182682.xyz
 //var cdnUrl = "api.cloudflare.182682.xyz"
 var nodeUrl = "https://nodefree.githubrowcontent.com/"
 
-type V2rayConfig struct {
-	MixedPort struct {
-		Port     int    `yaml:"mixed-port"`
-		AllowLan bool   `yaml:"allow-lan"`
-		Mode     string `yaml:"mode"`
-		IPv6     bool   `yaml:"ipv6"`
-	} `yaml:"mixed-port"`
-	LogLevel           string `yaml:"log-level"`
-	ExternalController struct {
-		Address string `yaml:"external-controller"`
-	} `yaml:"external-controller"`
-	DNS struct {
-		Enable            bool     `yaml:"enable"`
-		Listen            string   `yaml:"listen"`
-		IPv6              bool     `yaml:"ipv6"`
-		DefaultNameserver []string `yaml:"default-nameserver"`
-		Nameserver        []string `yaml:"nameserver"`
-		EnhancedMode      string   `yaml:"enhanced-mode"`
-		FakeIPRange       string   `yaml:"fake-ip-range"`
-		FakeIPFilter      []string `yaml:"fake-ip-filter"`
-	} `yaml:"dns"`
-	Tun struct {
-		Enable              bool     `yaml:"enable"`
-		Stack               string   `yaml:"stack"`
-		AutoRoute           bool     `yaml:"auto-route"`
-		AutoDetectInterface bool     `yaml:"auto-detect-interface"`
-		DNSHijack           []string `yaml:"dns-hijack"`
-	} `yaml:"tun"`
-	Proxies     []Proxy      `yaml:"proxies"`
-	ProxyGroups []ProxyGroup `yaml:"proxy-groups"`
-	Rules       []Rule       `yaml:"rules"`
-}
-
-type Proxy struct {
-	Name     string `yaml:"name"`
-	Port     int    `yaml:"port"`
-	Server   string `yaml:"server"`
-	Type     string `yaml:"type"`
-	UDP      bool   `yaml:"udp"`
-	Password string `yaml:"password"`
-	Cipher   string `yaml:"cipher"`
-}
-
-type ProxyGroup struct {
-	Name    string   `yaml:"name"`
-	Type    string   `yaml:"type"`
-	Proxies []string `yaml:"proxies"`
-}
-
-type Rule struct {
-	Type    string      `yaml:"type"`
-	Value   string      `yaml:"value"`
-	Payload interface{} `yaml:"payload"`
-}
-
 func main() {
 	port := "0.0.0.0:59399"
 	//r := gin.Default()
