@@ -13,7 +13,7 @@ import (
 cf.0sm.com, *.cloudflare.182682.xyz
 */
 //var cdnUrl = "api.cloudflare.182682.xyz"
-var nodeUrl = "https://nodefree.githubrowcontent.com/"
+var nodeUrl = "https://1208.fly321.pw/"
 
 func main() {
 	port := "0.0.0.0:59399"
